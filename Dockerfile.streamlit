@@ -1,0 +1,14 @@
+# Dockerfile-streamlit
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy only what's needed for Streamlit
+COPY /streamlit_app ./
+COPY requirements2.txt .
+
+RUN pip install --no-cache-dir -r requirements2.txt
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "frontend.py", "--server.port=8501", "--server.address=0.0.0.0"]
