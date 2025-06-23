@@ -39,21 +39,24 @@ pipeline {
         stage('Push Docker Image to ACR') {
             steps {
                 script {
-                    // Authenticate with ACR using the Service Principal credentials securely
-                    // The 'jenkins-acr-username' credential ID should be a Username with password credential
-                    // in Jenkins, where the Username is your ACR Service Principal App ID
-                    // and the Password is your Service Principal Client Secret.
+                    // Authenticate with ACR securely
                     withCredentials([usernamePassword(credentialsId: 'jenkins-acr-username', usernameVariable: 'ACR_UN', passwordVariable: 'ACR_PW')]) {
-                        // Use --password-stdin to securely pass the password
                         sh "echo \"${ACR_PW}\" | docker login ${ACR_LOGIN_SERVER} -u ${ACR_UN} --password-stdin"
+                        // Add a step to verify login status (though not all agents show this easily)
+                        sh "echo 'Docker login command executed. Checking status...'"
                     }
+
+                    // --- ADD THESE DEBUGGING LINES FOR PUSH STAGE ---
+                    sh "echo 'Attempting to push image...'"
+                    sh "echo 'Full image name for push: ${FULL_IMAGE_NAME}'"
+                    sh "docker images --filter reference='${FULL_IMAGE_NAME}'" // Check if the image exists locally
+                    // --- END DEBUGGING LINES ---
 
                     // Push the newly built image
                     sh "docker push ${FULL_IMAGE_NAME}"
                     echo "Docker image pushed to ACR: ${FULL_IMAGE_NAME}"
 
-                    // Logout from Docker registry (good practice for security)
-                    // Note: Docker logout doesn't usually require credentials for the logout command itself
+                    // Logout from Docker registry
                     sh "docker logout ${ACR_LOGIN_SERVER}"
                 }
             }
