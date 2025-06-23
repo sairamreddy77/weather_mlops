@@ -39,22 +39,27 @@ pipeline {
         stage('Push Docker Image to ACR') {
             steps {
                 script {
-                    // This block securely retrieves username and password from Jenkins credentials
-                    // and makes them available as environment variables (ACR_UN_SECURE, ACR_PW_SECURE)
-                    // ONLY within this 'withCredentials' scope.
-                    withCredentials([usernamePassword(credentialsId: 'jenkins-acr-username', usernameVariable: 'ACR_UN_SECURE', passwordVariable: 'ACR_PW_SECURE')]) {
-                        // Your suggested method: echo the password and pipe it to docker login --password-stdin
-                        sh "echo \"${ACR_PW_SECURE}\" | docker login ${ACR_LOGIN_SERVER} -u ${ACR_UN_SECURE} --password-stdin"
-                        echo "Docker login command executed securely."
-                    }
+            withCredentials([usernamePassword(credentialsId: 'jenkins-acr-username', usernameVariable: 'ACR_UN_SECURE', passwordVariable: 'ACR_PW_SECURE')]) {
+                
+                // Use single quotes to avoid Groovy interpolation and securely pass password via stdin
+                sh '''
+                echo "$ACR_PW_SECURE" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_UN_SECURE" --password-stdin
+                '''
 
-                    // After a successful login, the Docker daemon is authenticated for this registry.
-                    // Now, push the image.
-                    sh "docker push ${FULL_IMAGE_NAME}"
-                    echo "Docker image pushed to ACR: ${FULL_IMAGE_NAME}"
+                echo 'Docker login command executed securely.'
 
-                    // It's good practice to log out when done.
-                    sh "docker logout ${ACR_LOGIN_SERVER}"
+                // Push the Docker image
+                sh '''
+                docker push "$FULL_IMAGE_NAME"
+                '''
+
+                echo "Docker image pushed to ACR: ${FULL_IMAGE_NAME}"
+
+                // Logout after push
+                sh '''
+                docker logout "$ACR_LOGIN_SERVER"
+                '''
+                }
                 }
             }
         }
