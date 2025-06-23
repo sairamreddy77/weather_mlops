@@ -34,13 +34,14 @@ def fetch_past_24hr_weather():
         for record in hour_data:
             dt = datetime.strptime(record["time"], "%Y-%m-%d %H:%M")
             if dt >= yesterday:
-                data.append({
-                    "datetime": dt.strftime("%Y-%m-%d %H:00"),
+                doc={"datetime": dt.strftime("%Y-%m-%d %H:00"),
                     "temperature": record["temp_c"],
                     "humidity": record["humidity"],
                     "hour": dt.hour,
                     "month": dt.month
-                })
+                    
+                }
+                data.append(doc)
 
         live_col.update_one({"datetime": doc["datetime"]}, {"$set": doc}, upsert=True)  # Store in MongoDB here
     return data

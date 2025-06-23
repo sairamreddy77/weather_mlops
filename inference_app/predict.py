@@ -9,18 +9,22 @@ def create_features(latest_data):
         return datetime.utcnow() + timedelta(hours=5.5)
     
     now = get_ist_now()
+    hour = now.hour
+    dayofweek = now.weekday()
+    month = now.month
 
     features = {
-        **{f"temp_lag_{i+1}": df.iloc[-(i+1)]["temperature"] for i in range(6)},
-        **{f"humidity_lag_{i+1}": df.iloc[-(i+1)]["humidity"] for i in range(6)},
-        "hour": now.hour,
-        "dayofweek": now.weekday(),
-        "month": now.month,
-        "hour_sin": np.sin(2 * np.pi * now.hour / 24),
-        "hour_cos": np.cos(2 * np.pi * now.hour / 24),
-        "month_sin": np.sin(2 * np.pi * now.month / 12),
-        "month_cos": np.cos(2 * np.pi * now.month / 12),
+        **{f"temp_lag_{i+1}": float(df.iloc[-(i+1)]["temperature"]) for i in range(6)},
+        **{f"humidity_lag_{i+1}": float(df.iloc[-(i+1)]["humidity"]) for i in range(6)},
+        "hour": int(hour),
+        "dayofweek": int(dayofweek),
+        "month": int(month),
+        "hour_sin": float(np.sin(2 * np.pi * hour / 24)),
+        "hour_cos": float(np.cos(2 * np.pi * hour / 24)),
+        "month_sin": float(np.sin(2 * np.pi * month / 12)),
+        "month_cos": float(np.cos(2 * np.pi * month / 12)),
     }
+
     return pd.DataFrame([features])
 
 def predict_next_6_hours(latest_data):
