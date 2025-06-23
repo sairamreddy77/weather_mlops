@@ -39,21 +39,19 @@ pipeline {
         stage('Push Docker Image to ACR') {
             steps {
                 script {
-            // Use the environment variables from the environment block
-            sh '''
-            echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
-            '''
-            echo 'Docker login command executed securely.'
+                    withCredentials([usernamePassword(credentialsId: 'jenkins-acr-username', usernameVariable: 'ACR_UN_SECURE', passwordVariable: 'ACR_PW_SECURE')]) {
+                    sh '''
+                    echo "$ACR_PW_SECURE" | docker login mlops77.azurecr.io -u "$ACR_UN_SECURE" --password-stdin
+                    '''
+                    sh '''
+                    docker push "mlops77.azurecr.io/streamlit-app:1-$BUILD_NUMBER"
+                    '''
+                    sh '''
+                    docker logout mlops77.azurecr.io
+                    '''
+                }
 
-            sh '''
-            docker push "$FULL_IMAGE_NAME"
-            '''
-            echo "Docker image pushed to ACR: $FULL_IMAGE_NAME"
-
-            sh '''
-            docker logout "$ACR_LOGIN_SERVER"
-            '''
-        }
+            }
             }
         }
     }
