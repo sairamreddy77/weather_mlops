@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        ACR_LOGIN_SERVER = 'mlops77.azurecr.io'
+        IMAGE_NAME = "inference-app"
+        IMAGE_TAG = "1-${BUILD_NUMBER}"
+        FULL_IMAGE_NAME = "${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${IMAGE_TAG}"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${FULL_IMAGE_NAME} -f Dockerfile.inference ."
+                    echo "Docker image built: ${FULL_IMAGE_NAME}"
+                }
+            }
+        }
+
+        stage('Login & Push to ACR') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'acr-credentials', usernameVariable: 'ACR_USERNAME', passwordVariable: 'ACR_PASSWORD')]) {
+                    // Secure login using --password-stdin
+                    sh '''
+                    echo "$ACR_PASSWORD" | docker login mlops77.azurecr.io -u "$ACR_USERNAME" --password-stdin
+                    '''
+
+                    // Push image
+                    sh '''
+                    docker push "$FULL_IMAGE_NAME"
+                    '''
+
+                    // Logout
+                    sh '''
+                    docker logout mlops77.azurecr.io
+                    '''
+                }
+            }
+        }
+    }
+}

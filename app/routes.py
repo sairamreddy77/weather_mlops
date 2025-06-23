@@ -68,7 +68,7 @@ def forecast_next_hours():
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)})
 
-        pred_doc = {
+        pred_doc = {    
             "datetime": dt_str,
             "hour": hour,
             "month": month,

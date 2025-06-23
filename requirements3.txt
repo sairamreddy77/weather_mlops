@@ -1,0 +1,6 @@
+requests
+pymongo
+python-dotenv
+dotenv
+pandas
+numpy
