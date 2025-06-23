@@ -39,28 +39,21 @@ pipeline {
         stage('Push Docker Image to ACR') {
             steps {
                 script {
-            withCredentials([usernamePassword(credentialsId: 'jenkins-acr-username', usernameVariable: 'ACR_UN_SECURE', passwordVariable: 'ACR_PW_SECURE')]) {
-                
-                // Use single quotes to avoid Groovy interpolation and securely pass password via stdin
-                sh '''
-                echo "$ACR_PW_SECURE" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_UN_SECURE" --password-stdin
-                '''
+            // Use the environment variables from the environment block
+            sh '''
+            echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+            '''
+            echo 'Docker login command executed securely.'
 
-                echo 'Docker login command executed securely.'
+            sh '''
+            docker push "$FULL_IMAGE_NAME"
+            '''
+            echo "Docker image pushed to ACR: $FULL_IMAGE_NAME"
 
-                // Push the Docker image
-                sh '''
-                docker push "$FULL_IMAGE_NAME"
-                '''
-
-                echo "Docker image pushed to ACR: ${FULL_IMAGE_NAME}"
-
-                // Logout after push
-                sh '''
-                docker logout "$ACR_LOGIN_SERVER"
-                '''
-                }
-                }
+            sh '''
+            docker logout "$ACR_LOGIN_SERVER"
+            '''
+        }
             }
         }
     }
