@@ -6,8 +6,8 @@ pipeline {
     environment {
         // Retrieve ACR login credentials securely from Jenkins's built-in credential management
         // The IDs 'jenkins-acr-username' and 'jenkins-acr-password' must match the IDs you just created in Jenkins
-        ACR_USERNAME = credentials('jenkins-acr-username')
-        ACR_PASSWORD = credentials('jenkins-acr-password')
+        // ACR_USERNAME = credentials('jenkins-acr-username')
+        // ACR_PASSWORD = credentials('jenkins-acr-password')
         ACR_LOGIN_SERVER = 'mlops77.azurecr.io' // <<< MAKE SURE THIS IS YOUR CORRECT ACR LOGIN SERVER
 
         // Define image name and tag for versioning
