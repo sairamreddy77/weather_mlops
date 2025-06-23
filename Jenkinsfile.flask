@@ -31,7 +31,6 @@ pipeline {
 
                     sh 'pwd' // Print current working directory
                     sh 'ls -la' // List contents of the current directory
-                    sh 'ls -la flask_app/' // If your Dockerfile is in a subdirectory, check there too
                     
                     // Execute docker build command.
                     // The '.' means Dockerfile is in the current directory (which is the repo root after checkout)
