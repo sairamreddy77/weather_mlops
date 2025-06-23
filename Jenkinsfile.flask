@@ -30,7 +30,7 @@ pipeline {
                 script {
                     // Execute docker build command.
                     // The '.' means Dockerfile is in the current directory (which is the repo root after checkout)
-                    sh "docker build -t ${FULL_IMAGE_NAME} ."
+                    sh "docker build -t ${FULL_IMAGE_NAME} -f Dockerfile.flask ."
                     echo "Docker image built: ${FULL_IMAGE_NAME}"
                 }
             }
