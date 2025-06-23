@@ -3,7 +3,8 @@ import requests
 import pandas as pd
 
 # BASE_URL = "http://flask-app:5000"  # Change if hosted elsewhere
-BASE_URL = "http://localhost:5000"  # Change if hosted elsewhere
+# BASE_URL = "http://localhost:5000"  # Change if hosted elsewhere
+BASE_URL = "https://backend.internal.icycliff-903be01f.southindia.azurecontainerapps.io"
 
 st.title("🌦️ Weather Forecast Dashboard - Hyderabad")
 
