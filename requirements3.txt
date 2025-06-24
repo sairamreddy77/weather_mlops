@@ -2,5 +2,14 @@ requests
 pymongo
 python-dotenv
 dotenv
-pandas
-numpy
+
+pandas==2.2.2               # IMPORTANT: Match the version from MLflow model warnings
+numpy==1.23.5               # IMPORTANT: Match the version from MLflow model warnings
+mlflow==2.20.3              # IMPORTANT: Match the version from MLflow model warnings
+lightgbm==4.5.0             # IMPORTANT: This was missing and caused ModuleNotFoundError
+scikit-learn==1.5.1         # IMPORTANT: Match the version from MLflow model warnings
+scipy==1.13.1               # IMPORTANT: Match the version from MLflow model warnings
+pyarrow==11.0.0             # IMPORTANT: Match the version from MLflow model warnings
+cffi==1.16.0                # IMPORTANT: Match the version from MLflow model warnings
+psutil==6.0.0               # IMPORTANT: Match the version from MLflow model warnings
+matplotlib==3.9.2          # IMPORTANT: Match the version from MLflow model warnings

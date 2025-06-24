@@ -1,7 +1,13 @@
 # Dockerfile.inference
-FROM python:3.10-slim
+FROM python:3.9-slim-buster 
+# Use Python 3.9
+# ... rest of your Dockerfile
 
 WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libgomp1 && \
+    rm -rf /var/lib/apt/lists/* # Clean up apt cache to keep image small
 
 COPY /inference_app ./
 

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGODB_URI")
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["weather_db"]
 live_col = db["hourly_weather_data"]
