@@ -3,57 +3,44 @@ import numpy as np
 from datetime import datetime, timedelta
 from model_utils import get_models
 
-def create_features(latest_data):
-    df = pd.DataFrame(latest_data[-6:])  # Last 6 hrs
-    def get_ist_now():
-        return datetime.utcnow() + timedelta(hours=5.5)
-    
-    now = get_ist_now()
-    hour = now.hour
-    dayofweek = now.weekday()
-    month = now.month
-
-    features = {
-        **{f"temp_lag_{i+1}": float(df.iloc[-(i+1)]["temperature"]) for i in range(6)},
-        **{f"humidity_lag_{i+1}": float(df.iloc[-(i+1)]["humidity"]) for i in range(6)},
-        "hour": int(hour),
-        "dayofweek": int(dayofweek),
-        "month": int(month),
-        "hour_sin": float(np.sin(2 * np.pi * hour / 24)),
-        "hour_cos": float(np.cos(2 * np.pi * hour / 24)),
-        "month_sin": float(np.sin(2 * np.pi * month / 12)),
-        "month_cos": float(np.cos(2 * np.pi * month / 12)),
-    }
-
-    return pd.DataFrame([features])
-
-def predict_next_6_hours(latest_data):
+def predict_hourly_over_day(all_data):
     temp_model, hum_model = get_models()
     predictions = []
 
-    def get_ist_now():
-        return datetime.utcnow() + timedelta(hours=5.5)
-    
-    now = get_ist_now()
+    # Sort by datetime
+    df = pd.DataFrame(all_data)
+    df["datetime"] = pd.to_datetime(df["datetime"])
+    df = df.sort_values("datetime").reset_index(drop=True)
 
-    base_time = now.replace(minute=0, second=0, microsecond=0)
-    for i in range(6):
-        # Calculate future time
-        future_time = base_time + timedelta(hours=i+1)
-        X = create_features(latest_data)
+    for i in range(6, 30):  # Start at index 6 to have 6 lag hours
+        past_window = df.iloc[i - 6:i]
+        predict_time = df.iloc[i]["datetime"]
+
+        features = {
+            **{f"temp_lag_{j+1}": float(past_window.iloc[-(j+1)]["temperature"]) for j in range(6)},
+            **{f"humidity_lag_{j+1}": float(past_window.iloc[-(j+1)]["humidity"]) for j in range(6)},
+            "hour": int(predict_time.hour),
+            "dayofweek": int(predict_time.weekday()),
+            "month": int(predict_time.month),
+            "hour_sin": float(np.sin(2 * np.pi * predict_time.hour / 24)),
+            "hour_cos": float(np.cos(2 * np.pi * predict_time.hour / 24)),
+            "month_sin": float(np.sin(2 * np.pi * predict_time.month / 12)),
+            "month_cos": float(np.cos(2 * np.pi * predict_time.month / 12)),
+        }
+
+        X = pd.DataFrame([features])
         temp = round(temp_model.predict(X)[0], 1)
         hum = round(hum_model.predict(X)[0], 1)
+
         predictions.append({
-            "datetime": future_time.strftime("%Y-%m-%d %H:00"),
+            "datetime": predict_time.strftime("%Y-%m-%d %H:00"),
             "predicted_temperature": temp,
             "predicted_humidity": hum,
-            "hour": future_time.hour,
-            "month": future_time.month
+            "hour": predict_time.hour,
+            "month": predict_time.month
         })
-        # Simulate data shift for lag feature updates
-        latest_data.append({
-            "datetime": future_time.strftime("%Y-%m-%d %H:00"),
-            "temperature": temp,
-            "humidity": hum
-        })
+    
+    print(len(predictions))
+
     return predictions
+

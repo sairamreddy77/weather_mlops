@@ -9,7 +9,7 @@ client = MongoClient(MONGO_URI)
 db = client["weather_db"]
 
 weather_col = db["hourly_weather_data"]
-prediction_col = db["weather_predictions"]
+prediction_col = db["daily_predictions"]
 
 # Ensure index for deduplication
 prediction_col.create_index("datetime", unique=True)

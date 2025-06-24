@@ -2,10 +2,14 @@ import requests
 import pandas as pd
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Configuration
-API_KEY = "b4b37638262b4386b4663424251306"
-MONGO_URI = "mongodb+srv://sairambreddy:Sairam.1234$@sairamcluster.lcqqefi.mongodb.net/?retryWrites=true&w=majority&appName=sairamcluster"
+API_KEY = os.getenv("WEATHER_API_KEY")
+MONGO_URI =os.getenv("MONGO_URI")
 DATABASE_NAME = "weather_db"
 COLLECTION_NAME = "hourly_weather_data"
 LOCATION = "Hyderabad"
