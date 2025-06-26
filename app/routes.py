@@ -26,8 +26,8 @@ mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 mlflow.set_registry_uri("databricks-uc")
 
 # Load them models from the model registry
-temp_model = mlflow.pyfunc.load_model(f"models:/{os.getenv('TEMP_MODEL_NAME')}/1")
-hum_model = mlflow.pyfunc.load_model(f"models:/{os.getenv('HUMIDITY_MODEL_NAME')}/1")
+temp_model = mlflow.pyfunc.load_model(f"models:/{os.getenv('TEMP_MODEL_NAME')}@prod")
+hum_model = mlflow.pyfunc.load_model(f"models:/{os.getenv('HUMIDITY_MODEL_NAME')}@prod")
 
 
 weather_blueprint = Blueprint("weather", __name__)

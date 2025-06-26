@@ -1,0 +1,15 @@
+# Core
+flask==2.3.2
+pymongo==4.6.1
+lightgbm==4.5.0
+numpy==1.26.4
+pandas==2.2.2
+joblib==1.4.2
+requests==2.31.0
+dotenv
+python-dotenv
+mlflow
+scikit-learn==1.5.1         # IMPORTANT: Match the version from ML
+scipy==1.13.1               # IMPORTANT: Match the version from MLflow model
+
+
