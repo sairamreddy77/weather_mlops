@@ -70,3 +70,43 @@ This project is an end-to-end MLOps pipeline designed to forecast hourly **tempe
      |   Streamlit     |
      |   Frontend UI   |
      +----------------+
+
+
+
+     
+---
+
+## 📅 Workflows
+
+### 🧠 Model Training
+- Trained using sliding window on 1 year of hourly data.
+- Targets: Temperature, Humidity
+- Tracked on MLflow (Databricks)
+- Saved as TorchScript/LightGBM binary
+
+### 📈 Inference (Scheduled Daily)
+- Runs every 24 hours via Azure Job
+- Predicts next 6 hours based on previous 24
+- Stores output in MongoDB for frontend
+
+### 🔁 Retraining
+- Triggered monthly (via Azure Container App job)
+- Uses latest live data from MongoDB
+- New model pushed to MLflow and tagged
+
+### 📊 Monitoring (Planned)
+- Logs metrics like inference time, error rate, model drift
+- Prometheus scrapes app endpoints
+- Grafana dashboards visualize metrics
+
+---
+
+## ✅ Getting Started (Dev)
+
+```bash
+git clone https://github.com/your-username/weather-mlops.git
+cd weather-mlops
+
+# Build and run containers
+docker-compose up --build
+
